@@ -1,5 +1,5 @@
 <template>
-    <div id="board">
+    <div id="board" :style = "boardStyle">
         
         <square
         v-for = "block in squares"
@@ -18,6 +18,7 @@ import square from "./square";
         const boardWidth = 8;
         const boardHeight = 8;
         const boardArea = boardWidth * boardHeight;
+        const squareSize = 50;
 
 export default {
     name: "Board",
@@ -29,6 +30,11 @@ export default {
             squares: [],
             row: 0,
             columnArray: ['a','b', 'c', 'd','e','f', 'g', 'h'],
+            boardStyle: {
+                display: "grid",
+                gridTemplateRows: `repeat(${boardHeight}, ${squareSize}px)`,
+                gridTemplateColumns: `repeat(${boardWidth}, ${squareSize}px)`
+            }
         }
     },
     methods: {
@@ -52,7 +58,7 @@ export default {
         },
         repeatSquare() {
             console.log('repeatSquare');
-            for (let i = 0; i <= boardArea; i++) {
+            for (let i = 0; i < boardArea; i++) {
                 this.squares.push(               
                     {
                         id: this.makeIds(i),
