@@ -1,5 +1,5 @@
 <template>
-    <div id="board" :style = "boardStyle">
+    <div id="board" >
         
         <square
         v-for = "block in squares"
@@ -18,7 +18,9 @@ import square from "./square";
         const boardWidth = 8;
         const boardHeight = 8;
         const boardArea = boardWidth * boardHeight;
-        const squareSize = 50;
+        const squareSide = 100;
+        let row = 0;
+        let coordinates = {};
 
 export default {
     name: "Board",
@@ -28,45 +30,67 @@ export default {
     data() {
         return {
             squares: [],
-            row: 0,
             columnArray: ['a','b', 'c', 'd','e','f', 'g', 'h'],
-            boardStyle: {
-                display: "grid",
-                gridTemplateRows: `repeat(${boardHeight}, ${squareSize}px)`,
-                gridTemplateColumns: `repeat(${boardWidth}, ${squareSize}px)`
-            }
         }
     },
     methods: {
         
         makeIds(index) {
-            console.log("makeIds")
             //get letter from array and repeat for each row
             let column = this.columnArray[index % boardWidth];
             //increment row every time a new row starts
             if (index % boardWidth === 0){
-                this.row += 1;
+                row += 1;
             }
             
-            return `square-${column}${this.row}` 
+            this.makeSquareCoordinates(column, row);
+            return `square-${column}${row}` 
         },
         makeSquareStyle() {
             
         },
-        alternateColor() {
-
+        alternateColor(color1, color2, index) {
+         let color = "";
+         //alternate between two colors
+              
+            if(index % 2 === 0){
+                    color = color1;
+                };
+            if(index % 2 === 1){
+                    color = color2;
+                };
+           
+         //reverse alternation every row if boardWidth is even
+            
+            if(boardWidth % 2 === 0){
+                if(index % (boardWidth * 2) >= boardWidth)
+                    if(color === color1){
+                        color = color2;
+                    }else if(color === color2){
+                        color = color1
+                    }    
+            }
+            return color;
+            
+         },
+        makeSquareCoordinates(column,row) {
+            coordinates.marginLeft= squareSide * (this.columnArray.indexOf(column) + 1);
+            coordinates.marginTop = squareSide * row;
         },
-        repeatSquare() {
-            console.log('repeatSquare');
+        repeatSquare(color) {
+           
             for (let i = 0; i < boardArea; i++) {
                 this.squares.push(               
                     {
                         id: this.makeIds(i),
                         squareStyle:{
-                        width: "50px",
-                        height: "50px",
-                        backgroundColor: "#000",    
-                        }
+                        position: "absolute",
+                        width: `${squareSide}px`,
+                        height: `${squareSide}px`,
+                        backgroundColor: this.alternateColor('#2003fc','#05021a',i), 
+                        marginLeft: `${coordinates.marginLeft}px`,
+                        marginTop: `${coordinates.marginTop}px`,   
+                    }
 
                 });  
             }   
@@ -75,9 +99,8 @@ export default {
     created(){
         
        this.repeatSquare(boardArea);
-
-
-    }
+    
+    },
 
 
 }
