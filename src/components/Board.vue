@@ -1,6 +1,8 @@
 <template>
     <div id="board" >
         
+        <selector />
+        
         <square
         v-for = "block in squares"
         :id = "block.id"
@@ -13,12 +15,13 @@
 
 <script>
 import square from "./square";
+import selector from "./selector";
 
            
         const boardWidth = 8;
         const boardHeight = 8;
         const boardArea = boardWidth * boardHeight;
-        const squareSide = 100;
+        const squareSide = 50;
         let row = 0;
         let coordinates = {};
 
@@ -26,16 +29,20 @@ export default {
     name: "Board",
     components: {
         square,
+        selector,
     },
     data() {
         return {
             squares: [],
-            columnArray: ['a','b', 'c', 'd','e','f', 'g', 'h'],
+            columnArray: ['a','b', 'c','d','e','f', 'g', 'h'],
+            selectorLocation: "square-a1",
         }
     },
     methods: {
         
         makeIds(index) {
+            
+           
             //get letter from array and repeat for each row
             let column = this.columnArray[index % boardWidth];
             //increment row every time a new row starts
@@ -43,8 +50,10 @@ export default {
                 row += 1;
             }
             
+            let id = `square-${column}${row}`;
             this.makeSquareCoordinates(column, row);
-            return `square-${column}${row}` 
+            this.makeSelector(id);
+            return id; 
         },
         makeSquareStyle() {
             
@@ -77,12 +86,23 @@ export default {
             coordinates.marginLeft= squareSide * (this.columnArray.indexOf(column) + 1);
             coordinates.marginTop = squareSide * row;
         },
+        makeSelector(id){
+            
+            let selector = false;
+
+            if (id === this.selectorLocation) {
+                selector = true;
+            };
+            
+            return selector;
+        },
         repeatSquare(color) {
            
             for (let i = 0; i < boardArea; i++) {
                 this.squares.push(               
                     {
                         id: this.makeIds(i),
+                        selector: this.makeSelector(),
                         squareStyle:{
                         position: "absolute",
                         width: `${squareSide}px`,
@@ -91,8 +111,8 @@ export default {
                         marginLeft: `${coordinates.marginLeft}px`,
                         marginTop: `${coordinates.marginTop}px`,   
                     }
-
                 });  
+               
             }   
         }
     },
